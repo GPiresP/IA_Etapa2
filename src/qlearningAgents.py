@@ -54,7 +54,7 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
 
         # Get state dict
-        state_key = str(state[0]) + ',' + str(state[1])
+        state_key = str(state)
         state_values = self.values.get(state_key, None)
 
         # State dict does not exist yet
@@ -175,7 +175,7 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        state_key = str(state[0]) + ',' + str(state[1])
+        state_key = str(state)
 
         self.values[state_key][action] = (1-self.alpha)*self.getQValue(state, action) + self.alpha*(reward + self.discount*self.computeValueFromQValues(nextState))
 
