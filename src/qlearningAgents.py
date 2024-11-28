@@ -44,8 +44,6 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
 
         self.values = util.Counter()
-        self.discount = args.get("discount", 0.9)
-        self.iterations = args.get("iterations", 100)
 
     def getQValue(self, state, action):
         """
@@ -86,7 +84,19 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        actions = self.getLegalActions(state)
+        q_values = []
+
+        # Return 0.0 if there are no legal actions
+        if len(actions) == 0:
+          return 0.0
+
+        for action in actions:
+          q_values.append(self.getQValue(state, action))
+
+        return max(q_values)
+        
 
     def computeActionFromQValues(self, state):
         """
@@ -95,7 +105,35 @@ class QLearningAgent(ReinforcementAgent):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        actions = self.getLegalActions(state)
+        best_actions = []
+        highest_value = None
+
+        # Return None if there are no legal actions
+        if len(actions) == 0:
+          return None
+        
+        for action in actions:
+          action_value = self.getQValue(state, action)
+
+          if highest_value == None:
+            best_actions.append(action)
+            highest_value = action_value
+          
+          elif action_value == highest_value:
+            best_actions.append(action)
+
+          elif action_value > highest_value:
+            best_actions = []
+            best_actions.append(action)
+            highest_value = action_value
+
+        if len(best_actions) == 0:
+           return None
+
+        return random.choice(best_actions)
+
 
     def getAction(self, state):
         """
@@ -126,14 +164,10 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
-        print("DEBUG STATE")
-        print(state)
-        print("DEBUG ACTION")
-        print(action)
-        print("DEBUG NEXT STATE")
-        print(nextState)
-        print("DEBUG REWARD")
-        print(reward)
+
+        state_key = str(state[0]) + ',' + str(state[1])
+
+        self.values[state_key][action] = (1-self.alpha)*self.getQValue(state, action) + self.alpha*(reward + self.discount*self.computeValueFromQValues(nextState))
 
 
     def getPolicy(self, state):
