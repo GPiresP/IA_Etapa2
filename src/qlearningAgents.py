@@ -43,6 +43,10 @@ class QLearningAgent(ReinforcementAgent):
         ReinforcementAgent.__init__(self, **args)
         "*** YOUR CODE HERE ***"
 
+        self.values = util.Counter()
+        self.discount = args.get("discount", 0.9)
+        self.iterations = args.get("iterations", 100)
+
     def getQValue(self, state, action):
         """
           Returns Q(state,action)
@@ -50,6 +54,28 @@ class QLearningAgent(ReinforcementAgent):
           or the Q node value otherwise
         """
         "*** YOUR CODE HERE ***"
+
+        # Get state dict
+        state_key = str(state[0]) + ',' + str(state[1])
+        state_values = self.values.get(state_key, None)
+
+        # State dict does not exist yet
+        if (state_values is None):
+            self.values[state_key] = util.Counter()
+            self.values[state_key][action] = 0.0
+
+            return 0.0
+
+        # Get Q node value
+        q_value = state_values.get(action, None)
+
+        # Q node value does not exist yet
+        if (q_value is None):
+            self.values[state_key][action] = 0.0
+
+            return 0.0
+        
+        return q_value
 
 
     def computeValueFromQValues(self, state):
